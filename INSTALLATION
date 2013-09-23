@@ -1,0 +1,14 @@
+To compile TEM-simulator, follow these steps.
+
+1. Make sure you have FFTW version 3 installed.
+
+2. If necessary, edit the first few lines in the Makefile
+in the src directory, to specify the C compiler you want
+to use, and the directory where FFTW is installed.
+
+3. Compile by running make without any arguments in the
+src directory. The executable called TEM-simulator should
+appear in the same directory as the source files.
+
+For details and information about running the program,
+refer to the manual.

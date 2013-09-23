@@ -1,0 +1,169 @@
+# Log file created by TEM-simulator, version 1.3.
+# Input data read from file /Users/alinar/Desktop/filament2_tiltseries_defocus_0_8/input_simulation.txt.
+#
+=== simulation  ===
+#
+  generate_micrographs      = yes
+  generate_volumes          = no
+  generate_particle_maps    = no
+  log_file                  = ../tem_images.log
+# rand_seed                   undefined
+#
+=== detector  ===
+#
+  det_pix_x                 = 250
+  det_pix_y                 = 250
+# padding                   = 20  (default)
+  pixel_size                = 16.000000
+  gain                      = 80.000000
+  dqe                       = 0.400000
+  use_quantization          = yes
+  mtf_a                     = 0.700000
+  mtf_b                     = 0.200000
+  mtf_c                     = 0.100000
+  mtf_alpha                 = 10.000000
+  mtf_beta                  = 40.000000
+# mtf_p                     = 1.000000  (default)
+# mtf_q                     = 1.000000  (default)
+  image_file_out            = ../tem_images.mrc
+# image_file_format         = mrc  (default)
+# image_axis_order          = xy  (default)
+# image_file_byte_order     = native  (default)
+#
+=== detector  ===
+#
+  det_pix_x                 = 250
+  det_pix_y                 = 250
+# padding                   = 20  (default)
+  pixel_size                = 16.000000
+  gain                      = 80.000000
+  dqe                       = 0.400000
+  use_quantization          = no
+  mtf_a                     = 0.700000
+  mtf_b                     = 0.200000
+  mtf_c                     = 0.100000
+  mtf_alpha                 = 10.000000
+  mtf_beta                  = 40.000000
+# mtf_p                     = 1.000000  (default)
+# mtf_q                     = 1.000000  (default)
+  image_file_out            = ../tem_images_noisefree.mrc
+# image_file_format         = mrc  (default)
+# image_axis_order          = xy  (default)
+# image_file_byte_order     = native  (default)
+#
+=== electronbeam  ===
+#
+  acc_voltage               = 120.000000
+  energy_spread             = 1.300000
+  gen_dose                  = yes
+# total_dose                  undefined
+  dose_per_im               = 3000.000000
+# dose_sd                   = 0.000000  (default)
+# dose_file_in                undefined
+# dose_file_out               undefined
+#
+=== geometry  ===
+#
+# ntilts                      undefined
+  gen_tilt_data             = no
+# tilt_axis                 = 0.000000  (default)
+# theta_start                 undefined
+# theta_incr                  undefined
+# tilt_mode                 = tiltseries  (default)
+  geom_file_in              = particle_tilts.txt
+# geom_file_out               undefined
+  geom_errors               = none
+# tilt_err                  = 0.000000  (default)
+# align_err_rot             = 0.000000  (default)
+# align_err_tr              = 0.000000  (default)
+# error_file_in               undefined
+# error_file_out              undefined
+#
+=== optics  ===
+#
+  magnification             = 145058.000000
+  gen_defocus               = yes
+  defocus_nominal           = 0.800000
+# defocus_syst_error        = 0.000000  (default)
+# defocus_nonsyst_error     = 0.000000  (default)
+# defocus_file_in             undefined
+# defocus_file_out            undefined
+  cs                        = 2.100000
+  cc                        = 2.200000
+  aperture                  = 40.000000
+  focal_length              = 2.700000
+  cond_ap_angle             = 0.100000
+#
+=== particle filament2_1_MWC ===
+#
+  voxel_size                = 0.110300
+# nx                          undefined
+# ny                          undefined
+# nz                          undefined
+  use_imag_pot              = yes
+# famp                        undefined
+# use_defocus_corr          = no  (default)
+  source                    = pdb
+  pdb_file_in               = filament2_1_MWC.pdb
+# pdb_transf_file_in          undefined
+  add_hydrogen              = yes
+  map_file_format           = mrc
+# map_axis_order            = xyz  (default)
+# map_file_byte_order       = native  (default)
+# map_file_re_in              undefined
+# map_file_im_in              undefined
+# map_file_re_out             undefined
+# map_file_im_out             undefined
+# contrast_re                 undefined
+# contrast_im                 undefined
+# smoothness                  undefined
+# make_positive               undefined
+#
+=== particleset  ===
+#
+  particle_type             = filament2_1_MWC
+  particle_coords           = file
+# gen_rand_positions          undefined
+# where                       undefined
+# num_particles               undefined
+# particle_conc               undefined
+# occupancy                   undefined
+# nx                        = 1  (default)
+# ny                        = 1  (default)
+# nz                        = 1  (default)
+# offset_x                  = 0.000000  (default)
+# offset_y                  = 0.000000  (default)
+# offset_z                  = 0.000000  (default)
+# particle_dist               undefined
+  coord_file_in             = coordinates.txt
+# coord_file_out              undefined
+#
+=== sample  ===
+#
+  diameter                  = 1200.000000
+  thickness_center          = 30.000000
+  thickness_edge            = 30.000000
+# offset_x                  = 0.000000  (default)
+# offset_y                  = 0.000000  (default)
+#
+=== volume  ===
+#
+# voxel_size                  undefined
+# nx                          undefined
+# ny                          undefined
+# nz                          undefined
+# offset_x                  = 0.000000  (default)
+# offset_y                  = 0.000000  (default)
+# offset_z                  = 0.000000  (default)
+# map_file_format           = mrc  (default)
+# map_axis_order            = xyz  (default)
+# map_file_byte_order       = native  (default)
+# map_file_re_out             undefined
+# map_file_im_out             undefined
+#
+=== end of input ===
+#
+# Random seed taken from clock: 1379938971
+# Simulation parameters object initialized.
+# 
+# Could not open file particle_tilts.txt for reading.
