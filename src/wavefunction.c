@@ -530,7 +530,7 @@ int wavefunction_propagate(simulation *sim, wavefunction *wf, double slice_th, l
   long i, np;
   double pos[3];
   matrix pm;
-  particle *p;
+  particle *p,*masked_particle;
   particleset *ps;
   sample *s = get_sample(sim, "");
   geometry *g = get_geometry(sim, "");
@@ -606,14 +606,17 @@ int wavefunction_propagate(simulation *sim, wavefunction *wf, double slice_th, l
 	  WARNING("Particle %s not found.\n", get_param_string(ps->param, PAR_PARTICLE_TYPE));
 	  return 1;
 	}
+	masked_particle	=	new_blanck_similar_particle(p);
 	for(i = 0; i < ps->coordinates.m; i++, c++){
 	  if (hit[c] && k == kvec[c]){
 	    if(get_particle_geom(&pm, pos, ps, i, g, tilt)) return 1;
 	    pos[2] -= k*slice_th;
-	    if(particle_project(p, wf, &pm, pos)) return 1;
+		mask_particle(p,masked_particle,pos, &pm, s);
+	    if(particle_project(masked_particle, wf, &pm, pos)) return 1;
 	    count++;
 	  }
 	}
+	delete_particle(masked_particle);
       }
       wavefunction_adj_phase(wf);
       wavefunction_prop_inel(wf, tilt, k*slice_th);

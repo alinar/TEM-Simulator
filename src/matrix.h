@@ -52,7 +52,7 @@ void swap_matrix_data(matrix *a, matrix *b);
 
 void copy_matrix(const matrix *a, matrix *b);
 
-void add_matrix(matrix *a, matrix *b, double x);
+void add_matrix(const matrix *a, matrix *b, double x);
 
 double sc_prod_matrix(matrix *a, matrix *b);
 

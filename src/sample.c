@@ -303,3 +303,5 @@ double sample_support_abs_pot(double acc_en){
   return PLANCKS_CONSTANT_SQ/(8*M_PI*M_PI*ELECTRON_MASS*ELEMENTARY_CHARGE*POTENTIAL_UNIT)*wave_number(acc_en)
          /(1+acc_en/ELEC_REST_ENERGY)*CARBON_DENS*cross_sec(acc_en,6);
 }
+
+/****************************************************************************/

@@ -174,7 +174,7 @@ void copy_matrix(const matrix *a, matrix *b){
 
 /****************************************************************************/
 
-void add_matrix(matrix *a, matrix *b, double x){
+void add_matrix(const matrix *a, matrix *b, double x){
   double *da, *db;
   long k;
   if((a->m)*(a->n) != (b->m)*(b->n)){
