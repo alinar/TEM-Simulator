@@ -447,3 +447,84 @@ PAR_PARTICLE_CONC ", or " PAR_OCCUPANCY " must be defined.\n");
   return 0;
 }
 
+/****************************************************************************/
+
+int mask_particle(const particle *particle_org, particle *masked_particle, sample *sample, particleset *ps, long ps_i){
+	double half_edge_thickness		=	0.5 * get_param_double(sample->param, PAR_THICKNESS_EDGE);
+	double half_center_thickness	=	0.5 * get_param_double(sample->param, PAR_THICKNESS_CENTER);
+	double voxel_size				=	get_param_double(particle_org->param, PAR_VOXEL_SIZE);
+	double diameter					=	get_param_double(sample->param, PAR_DIAMETER);
+	double a						=	half_edge_thickness - half_center_thickness;
+	double R=1,	R_sqr=1,	zo=1;
+	double l1,l2,xy_sqr;
+	double *trans_pos;
+	double pos[3];
+
+	matrix aux,aux_pos,voxel_pos,pm,pos_mtx;
+	array_index_type i,j,k;
+	array_index_type m	=	get_param_long(particle_org->param, PAR_NX);
+	array_index_type n	=	get_param_long(particle_org->param, PAR_NY);
+	array_index_type o	=	get_param_long(particle_org->param, PAR_NZ);
+	double m_0			=	0.5 * m;
+	double n_0			=	0.5 * n;
+	double o_0			=	0.5 * o;
+	if (a!=0){/*rectangular specimen, avoid dividing by zero */
+	R					=	(a*a + diameter*diameter/4)/(2*a);
+	R_sqr				=	R*R;
+	zo					=	R + half_center_thickness;
+	}
+
+	init_matrix(&aux,1,3);
+	init_matrix(&voxel_pos,1,3);
+	init_matrix(&aux_pos,1,3);
+	init_matrix(&pos_mtx,1,3);
+
+	/*fetch position and orientation of particle without tilt*/
+	init_matrix(&pm,3,3);
+	fill_matrix(&pm,0);
+	fill_matrix_diag(&pm,1);
+	if ( get_particle_coord(&pm,pos,ps, ps_i) ) return 1;
+
+	set_matrix_entry(&pos_mtx,0,0,	pos[0]);
+	set_matrix_entry(&pos_mtx,0,1,	pos[1]);
+	set_matrix_entry(&pos_mtx,0,2,	pos[2]);
+
+	for(k = 0; k < o; k++){
+		for(j = 0; j < n; j++){
+			for(i = 0; i < m; i++){
+				set_matrix_entry(&voxel_pos,0,0,	(i-m_0) * voxel_size);
+				set_matrix_entry(&voxel_pos,0,1,	(j-n_0) * voxel_size);
+				set_matrix_entry(&voxel_pos,0,2,	(k-o_0) * voxel_size);
+				matrix_mult(&voxel_pos,&pm,&aux);
+				copy_matrix(&pos_mtx,&aux_pos);
+				add_matrix(&aux,&aux_pos,1);
+				trans_pos	=	aux_pos.data;
+
+				xy_sqr	=	trans_pos[0]*trans_pos[0] + trans_pos[1]*trans_pos[1];
+				l1		=	xy_sqr + (zo-trans_pos[2])*(zo-trans_pos[2]);
+				l2		=	xy_sqr + (zo+trans_pos[2])*(zo+trans_pos[2]);
+
+				if ((a==0 && fabs(trans_pos[2])>half_edge_thickness) || (a!=0 && (l1<(R_sqr) || l2<(R_sqr)) ) ){
+					set_array_entry(&masked_particle->pot_re,i,j,k,0);
+					set_array_entry(&masked_particle->pot_im,i,j,k,0);
+					set_array_entry(&masked_particle->lap_pot_re,i,j,k,0);
+					set_array_entry(&masked_particle->lap_pot_im,i,j,k,0);
+
+				}
+				else{
+					set_array_entry(&masked_particle->pot_re,i,j,k,get_array_entry(&particle_org->pot_re,i,j,k));
+					set_array_entry(&masked_particle->pot_im,i,j,k,get_array_entry(&particle_org->pot_im,i,j,k));
+					set_array_entry(&masked_particle->lap_pot_re,i,j,k,get_array_entry(&particle_org->lap_pot_re,i,j,k));
+					set_array_entry(&masked_particle->lap_pot_im,i,j,k,get_array_entry(&particle_org->lap_pot_im,i,j,k));
+				}
+			}
+
+		}
+	}
+	free_matrix(&aux);
+	free_matrix(&voxel_pos);
+	free_matrix(&aux_pos);
+	free_matrix(&pm);
+	free_matrix(&pos_mtx);
+	return 0;
+}

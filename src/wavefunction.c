@@ -595,6 +595,7 @@ int wavefunction_propagate(simulation *sim, wavefunction *wf, double slice_th, l
 	}
       }
     }
+    masked_particle	=	malloc(sizeof(particle));
     /* Project particles slice by slice */
     for(k = kmin; k <= kmax; k++){
       c = 0;
@@ -606,17 +607,17 @@ int wavefunction_propagate(simulation *sim, wavefunction *wf, double slice_th, l
 	  WARNING("Particle %s not found.\n", get_param_string(ps->param, PAR_PARTICLE_TYPE));
 	  return 1;
 	}
-	masked_particle	=	new_blanck_similar_particle(p);
+    init_blanck_similar_particle(p,masked_particle);
 	for(i = 0; i < ps->coordinates.m; i++, c++){
 	  if (hit[c] && k == kvec[c]){
 	    if(get_particle_geom(&pm, pos, ps, i, g, tilt)) return 1;
 	    pos[2] -= k*slice_th;
-		mask_particle(p,masked_particle,pos, &pm, s);
+		mask_particle(p,masked_particle,s,ps,i);
 	    if(particle_project(masked_particle, wf, &pm, pos)) return 1;
 	    count++;
 	  }
 	}
-	delete_particle(masked_particle);
+	particle_reset(masked_particle);
       }
       wavefunction_adj_phase(wf);
       wavefunction_prop_inel(wf, tilt, k*slice_th);
@@ -634,5 +635,6 @@ int wavefunction_propagate(simulation *sim, wavefunction *wf, double slice_th, l
   if(get_sample_geom(&pm, pos, s, g, tilt) || background_project(s, wf, &pm, pos)
      || wavefunction_apply_bg_blur(wf, tilt)) return 1;
   free_matrix(&pm);
+  free(masked_particle);
   return 0;
 }

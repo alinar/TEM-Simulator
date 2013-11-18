@@ -96,4 +96,10 @@ int get_particle_coord(matrix *pm,
                        particleset *ps, 
                        long i);
 
+int mask_particle(const particle *particle_org,
+		particle *masked_particle,
+		sample *sample,
+		particleset *ps,
+		long ps_i);
+
 #endif

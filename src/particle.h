@@ -124,15 +124,7 @@ int particle_hits_wavefunction(particle *p,
 
 /************************************************************************/
 
-particle *new_blanck_similar_particle(particle *particle_org);
-
-/************************************************************************/
-
-int mask_particle(const particle *particle_org,
-                  particle *masked_particle,
-                  double *pos,
-                  matrix *pm,
-                  sample *sample);
+int init_blanck_similar_particle(particle *particle_org, particle *new_particle);
 
 
 #endif

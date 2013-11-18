@@ -39,7 +39,6 @@
 #include "sample.h"
 #include "simulation.h"
 #include "wavefunction.h"
-
 /****************************************************************************/
 
 param_table *particle_param_table(const char *name);
@@ -780,90 +779,22 @@ int generate_random_particle(array *a, double contrast, double smoothness, boole
 
 /****************************************************************************/
 
-particle *new_blanck_similar_particle(particle *particle_org){
-	particle *new_particle;
-	array_index_type m	=	get_param_double(particle_org->param, PAR_NX);
-	array_index_type n	=	get_param_double(particle_org->param, PAR_NY);
-	array_index_type o	=	get_param_double(particle_org->param, PAR_NZ);
+int init_blanck_similar_particle(particle *particle_org, particle *new_particle){
+	/*with sharing parameter tables*/
+	array_index_type m	=	get_param_long(particle_org->param, PAR_NX);
+	array_index_type n	=	get_param_long(particle_org->param, PAR_NY);
+	array_index_type o	=	get_param_long(particle_org->param, PAR_NZ);
 
-	new_particle	=	malloc(sizeof(particle));
 	/*initiating new_particle:*/
-		new_particle->param	=	particle_param_table("new_particle_param");
+		new_particle->param	=	particle_org->param;
 		init_array(&new_particle->pot_re,m,n,o);
 		init_array(&new_particle->pot_im,m,n,o);
 		init_array(&new_particle->lap_pot_re,m,n,o);
 		init_array(&new_particle->lap_pot_im,m,n,o);
 		new_particle->use_defocus_corr	=	particle_org->use_defocus_corr;
 		new_particle->use_imag_pot		=	particle_org->use_imag_pot;
-		new_particle->rev_byte_order		=	particle_org->rev_byte_order;
+		new_particle->rev_byte_order	=	particle_org->rev_byte_order;
 		new_particle->init				=	1;
-		return new_particle;
+		return 0;
 }
 
-/****************************************************************************/
-
-int mask_particle(const particle *particle_org, particle *masked_particle, double *pos, matrix *pm, sample *sample){
-	double half_edge_thickness		=	0.5 * get_param_double(sample->param, PAR_THICKNESS_EDGE);
-	double half_center_thickness	=	0.5 * get_param_double(sample->param, PAR_THICKNESS_CENTER);
-	double voxel_size				=	get_param_double(particle_org->param, PAR_VOXEL_SIZE);
-	double diameter					=	get_param_double(sample->param, PAR_DIAMETER);
-	double a						=	half_edge_thickness - half_center_thickness;
-	double R						=	(a*a + diameter*diameter/4)/(2*a);
-	double R_sqr					=	R*R;
-	double zo						=	R + half_center_thickness;
-	double l1,l2,xy_sqr;
-	double *trans_pos;
-	matrix aux,aux_pos,voxel_pos;
-	double m_0,n_0,o_0;
-	array_index_type i,j,k;
-	array_index_type m	=	get_param_double(particle_org->param, PAR_NX);
-	array_index_type n	=	get_param_double(particle_org->param, PAR_NY);
-	array_index_type o	=	get_param_double(particle_org->param, PAR_NZ);
-
-	init_matrix(&aux,3,1);
-	init_matrix(&voxel_pos,3,1);
-	init_matrix(&aux_pos,3,1);
-
-	m_0	=	0.5 * m;
-	n_0	=	0.5 * n;
-	o_0	=	0.5 * o;
-
-	set_matrix_entry(&aux_pos,0,0,	pos[0]);
-	set_matrix_entry(&aux_pos,0,1,	pos[1]);
-	set_matrix_entry(&aux_pos,0,2,	pos[2]);
-
-	for(k = 0; k < o; k++){
-		for(j = 0; j < n; j++){
-			for(i = 0; i < m; i++){
-				set_matrix_entry(&voxel_pos,0,0,	(i-m_0) * voxel_size);
-				set_matrix_entry(&voxel_pos,0,1,	(j-n_0) * voxel_size);
-				set_matrix_entry(&voxel_pos,0,2,	(k-o_0) * voxel_size);
-				matrix_mult(&voxel_pos,pm,&aux);
-				add_matrix(&aux,&aux_pos,1);
-				trans_pos	=	aux_pos.data;
-				xy_sqr	=	trans_pos[0]*trans_pos[0] + trans_pos[1]*trans_pos[1];
-				l1		=	xy_sqr + (zo-trans_pos[2])*(zo-trans_pos[2]);
-				l2		=	xy_sqr + (zo+trans_pos[2])*(zo+trans_pos[2]);
-				if (l1<(R_sqr) || l2<(R_sqr)){
-					set_array_entry(&masked_particle->pot_re,i,j,k,0);
-					set_array_entry(&masked_particle->pot_im,i,j,k,0);
-					set_array_entry(&masked_particle->lap_pot_re,i,j,k,0);
-					set_array_entry(&masked_particle->lap_pot_im,i,j,k,0);
-				}
-				else{
-					set_array_entry(&masked_particle->pot_re,i,j,k,get_array_entry(&particle_org->pot_re,i,j,k));
-					set_array_entry(&masked_particle->pot_im,i,j,k,get_array_entry(&particle_org->pot_im,i,j,k));
-					set_array_entry(&masked_particle->lap_pot_re,i,j,k,get_array_entry(&particle_org->lap_pot_re,i,j,k));
-					set_array_entry(&masked_particle->lap_pot_im,i,j,k,get_array_entry(&particle_org->lap_pot_im,i,j,k));
-				}
-
-			}
-
-		}
-	}
-
-	free_matrix(&aux);
-	free_matrix(&voxel_pos);
-	free_matrix(&aux_pos);
-	return 0;
-}
