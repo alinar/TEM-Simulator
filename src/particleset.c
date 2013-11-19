@@ -474,10 +474,10 @@ int mask_particle(const particle *particle_org, particle *masked_particle, sampl
 	zo					=	R + half_center_thickness;
 	}
 
-	init_matrix(&aux,1,3);
-	init_matrix(&voxel_pos,1,3);
-	init_matrix(&aux_pos,1,3);
-	init_matrix(&pos_mtx,1,3);
+	init_matrix(&aux,3,1);
+	init_matrix(&voxel_pos,3,1);
+	init_matrix(&aux_pos,3,1);
+	init_matrix(&pos_mtx,3,1);
 
 	/*fetch position and orientation of particle without tilt*/
 	init_matrix(&pm,3,3);
@@ -486,16 +486,16 @@ int mask_particle(const particle *particle_org, particle *masked_particle, sampl
 	if ( get_particle_coord(&pm,pos,ps, ps_i) ) return 1;
 
 	set_matrix_entry(&pos_mtx,0,0,	pos[0]);
-	set_matrix_entry(&pos_mtx,0,1,	pos[1]);
-	set_matrix_entry(&pos_mtx,0,2,	pos[2]);
+	set_matrix_entry(&pos_mtx,1,0,	pos[1]);
+	set_matrix_entry(&pos_mtx,2,0,	pos[2]);
 
 	for(k = 0; k < o; k++){
 		for(j = 0; j < n; j++){
 			for(i = 0; i < m; i++){
 				set_matrix_entry(&voxel_pos,0,0,	(i-m_0) * voxel_size);
-				set_matrix_entry(&voxel_pos,0,1,	(j-n_0) * voxel_size);
-				set_matrix_entry(&voxel_pos,0,2,	(k-o_0) * voxel_size);
-				matrix_mult(&voxel_pos,&pm,&aux);
+				set_matrix_entry(&voxel_pos,1,0,	(j-n_0) * voxel_size);
+				set_matrix_entry(&voxel_pos,2,0,	(k-o_0) * voxel_size);
+				matrix_mult(&pm,&voxel_pos,&aux);
 				copy_matrix(&pos_mtx,&aux_pos);
 				add_matrix(&aux,&aux_pos,1);
 				trans_pos	=	aux_pos.data;
@@ -505,20 +505,19 @@ int mask_particle(const particle *particle_org, particle *masked_particle, sampl
 				l2		=	xy_sqr + (zo+trans_pos[2])*(zo+trans_pos[2]);
 
 				if ((a==0 && fabs(trans_pos[2])>half_edge_thickness) || (a!=0 && (l1<(R_sqr) || l2<(R_sqr)) ) ){
-					set_array_entry(&masked_particle->pot_re,i,j,k,0);
-					set_array_entry(&masked_particle->pot_im,i,j,k,0);
+					set_array_entry(&masked_particle->pot_re    ,i,j,k,0);
+					set_array_entry(&masked_particle->pot_im    ,i,j,k,0);
 					set_array_entry(&masked_particle->lap_pot_re,i,j,k,0);
 					set_array_entry(&masked_particle->lap_pot_im,i,j,k,0);
 
 				}
 				else{
-					set_array_entry(&masked_particle->pot_re,i,j,k,get_array_entry(&particle_org->pot_re,i,j,k));
-					set_array_entry(&masked_particle->pot_im,i,j,k,get_array_entry(&particle_org->pot_im,i,j,k));
+					set_array_entry(&masked_particle->pot_re    ,i,j,k,get_array_entry(&particle_org->pot_re    ,i,j,k));
+					set_array_entry(&masked_particle->pot_im    ,i,j,k,get_array_entry(&particle_org->pot_im    ,i,j,k));
 					set_array_entry(&masked_particle->lap_pot_re,i,j,k,get_array_entry(&particle_org->lap_pot_re,i,j,k));
 					set_array_entry(&masked_particle->lap_pot_im,i,j,k,get_array_entry(&particle_org->lap_pot_im,i,j,k));
 				}
 			}
-
 		}
 	}
 	free_matrix(&aux);
