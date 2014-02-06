@@ -607,7 +607,7 @@ int wavefunction_propagate(simulation *sim, wavefunction *wf, double slice_th, l
 	  WARNING("Particle %s not found.\n", get_param_string(ps->param, PAR_PARTICLE_TYPE));
 	  return 1;
 	}
-    init_blanck_similar_particle(p,masked_particle);
+    init_blank_similar_particle(p,masked_particle);
 	for(i = 0; i < ps->coordinates.m; i++, c++){
 	  if (hit[c] && k == kvec[c]){
 	    if(get_particle_geom(&pm, pos, ps, i, g, tilt)) return 1;

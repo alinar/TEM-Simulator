@@ -779,12 +779,11 @@ int generate_random_particle(array *a, double contrast, double smoothness, boole
 
 /****************************************************************************/
 
-int init_blanck_similar_particle(particle *particle_org, particle *new_particle){
+int init_blank_similar_particle(particle *particle_org, particle *new_particle){
 	/*with sharing parameter tables*/
-	array_index_type m	=	get_param_long(particle_org->param, PAR_NX);
-	array_index_type n	=	get_param_long(particle_org->param, PAR_NY);
-	array_index_type o	=	get_param_long(particle_org->param, PAR_NZ);
-
+	array_index_type m	=	particle_org->pot_re.size[0];
+	array_index_type n	=	particle_org->pot_re.size[1];
+	array_index_type o	=	particle_org->pot_re.size[2];
 	/*initiating new_particle:*/
 		new_particle->param	=	particle_org->param;
 		init_array(&new_particle->pot_re,m,n,o);

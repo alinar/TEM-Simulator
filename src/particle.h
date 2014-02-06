@@ -124,7 +124,8 @@ int particle_hits_wavefunction(particle *p,
 
 /************************************************************************/
 
-int init_blanck_similar_particle(particle *particle_org, particle *new_particle);
+int init_blank_similar_particle(particle *particle_org,
+                                particle *new_particle);
 
 
 #endif

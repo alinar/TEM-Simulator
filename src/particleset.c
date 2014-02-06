@@ -462,9 +462,9 @@ int mask_particle(const particle *particle_org, particle *masked_particle, sampl
 
 	matrix aux,aux_pos,voxel_pos,pm,pos_mtx;
 	array_index_type i,j,k;
-	array_index_type m	=	get_param_long(particle_org->param, PAR_NX);
-	array_index_type n	=	get_param_long(particle_org->param, PAR_NY);
-	array_index_type o	=	get_param_long(particle_org->param, PAR_NZ);
+	array_index_type m	=	particle_org->pot_re.size[0];
+	array_index_type n	=	particle_org->pot_re.size[1];
+	array_index_type o	=	particle_org->pot_re.size[2];
 	double m_0			=	0.5 * m;
 	double n_0			=	0.5 * n;
 	double o_0			=	0.5 * o;
