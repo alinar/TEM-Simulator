@@ -25,7 +25,7 @@
 #include <math.h>
 #include <string.h>
 #include "array.h"
-#include "/opt/local/include/fftw3.h"
+#include "fftw3.h"
 #include "log.h"
 #include "misc.h"
 

@@ -26,7 +26,7 @@
 #include "wavefunction.h"
 #include "array.h"
 #include "electronbeam.h"
-#include "/opt/local/include/fftw3.h"
+#include "fftw3.h"
 #include "functions.h"
 #include "geometry.h"
 #include "log.h"
