@@ -23,7 +23,7 @@
 #ifndef STRUCTS_HEADER
 #define STRUCTS_HEADER
 #include "array.h"
-#include "/opt/local/include/fftw3.h"
+#include "fftw3.h"
 #include "functions.h"
 #include "input.h"
 #include "macros.h"
