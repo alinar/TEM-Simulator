@@ -62,6 +62,7 @@ void set_matrix_entry(matrix *a, long i, long j, double x){
   double *d;
   if((i < a->m)&&(j < a->n)&&(i >= 0)&&(j >= 0)){  
     d = a->data;
+	/* column-major structure */
     d += i + j*a->m;
     *d = x;
   }
@@ -250,6 +251,16 @@ double norm_sq_matrix(matrix *a){
 /****************************************************************************/
 
 void rotate3drows(matrix *a, double x, double y, double z, double v){
+
+  /*
+   * inserts rotation of v radians around axis (x,y,z) in 3by3 trasnformator matrix a.
+   * if a is a 3 by 3 identity matrix, it will be replaced by a rotation matrix of v radians
+   * around the axis with the unit vector of (x,y,z).
+   * if a is any 3 by 3 transformation matrixs, this rotation will be concatenated to a.
+   * the transformations are multiplyed from the right side. and the coordinations should
+   * be stated in 1 by 3 matices.
+  */
+	
   double k, sn, cs;
   matrix b, c;
   if(a->n != 3){
@@ -260,6 +271,7 @@ void rotate3drows(matrix *a, double x, double y, double z, double v){
   k = 1/sqrt(x*x + y*y + z*z);
   x *= k; y*= k; z*= k;
   cs = cos(v); sn = sin(v);
+  //matrix has culumn-major struct. hence this is a rotation matrix to be multiplied from the right side.
   b.data[0] = cs + x*x*(1-cs);
   b.data[1] = x*y*(1-cs)-z*sn;
   b.data[2] = x*z*(1-cs)+y*sn;

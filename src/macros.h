@@ -23,7 +23,7 @@
 #define MACROS_HEADER
 
 /* Version of the program */
-#define VERSION_NUMBER "1.3"
+#define VERSION_NUMBER "1.4"
 
 /* The maximum length of lines (including \n) in input files */
 #define MAX_LINE_LENGTH 201
@@ -166,16 +166,16 @@
 
 
 /* Component types */
-#define TYPE_DETECTOR             "detector"
-#define TYPE_ELECTRONBEAM         "electronbeam"
-#define TYPE_GEOMETRY             "geometry"
-#define TYPE_OPTICS               "optics"
-#define TYPE_PARTICLE             "particle"
-#define TYPE_PARTICLESET          "particleset"
-#define TYPE_SAMPLE               "sample"
-#define TYPE_SIMULATION           "simulation"
-#define TYPE_VOLUME               "volume"
-
+#define TYPE_DETECTOR                "detector"
+#define TYPE_ELECTRONBEAM            "electronbeam"
+#define TYPE_GEOMETRY                "geometry"
+#define TYPE_OPTICS                  "optics"
+#define TYPE_PARTICLE                "particle"
+#define TYPE_PARTICLESET             "particleset"
+#define TYPE_SAMPLE                  "sample"
+#define TYPE_SIMULATION              "simulation"
+#define TYPE_VOLUME                  "volume"
+#define TYPE_ELECTRON_SPECIMEN_MODEL "electron_specimen_model"
 
 /* Names of parameters used in input */
 #define PAR_ACC_VOLTAGE             "acc_voltage"
@@ -273,6 +273,9 @@
 #define PAR_USE_QUANTIZATION        "use_quantization"
 #define PAR_VOXEL_SIZE              "voxel_size"
 #define PAR_WHERE                   "where"
+#define PAR_INTERACTION_MODEL       "interaction_model"
+#define PAR_SLICE_THICKNESS         "slice_thickness"
+#define PAR_SLICE_WRITE_VOLUME      "slice_write_volume"
 
 /* Possible values of some string parameters */
 #define PAR_BYTE_ORDER__BE          "be"
@@ -296,6 +299,8 @@
 #define PAR_WHERE__SURFACE          "surface"
 #define PAR_WHERE__TOP              "top"
 #define PAR_WHERE__VOLUME           "volume"
-
+#define PAR_INTERACTION_MODEL__LINEAR "linear"
+#define PAR_INTERACTION_MODEL__PROJECTION "projection"
+#define PAR_INTERACTION_MODEL__MULTISLICE "multislice"
 
 #endif /* MACROS_HEADER */

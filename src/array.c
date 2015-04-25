@@ -25,7 +25,7 @@
 #include <math.h>
 #include <string.h>
 #include "array.h"
-#include "/opt/local/include/fftw3.h"
+#include <fftw3.h>
 #include "log.h"
 #include "misc.h"
 
@@ -280,6 +280,17 @@ array_data_type get_array_entry(const array *a, array_index_type i, array_index_
   }
   else {
     return 0;
+  }
+}
+
+/****************************************************************************/
+
+array_data_type get_array_entry_default(const array *a, array_index_type i, array_index_type j, array_index_type k, array_data_type default_value){
+  if(array_index_in_range(a,i,j,k)){
+    return *(a->data + i + (j + k*a->size[1])*a->size[0]);
+  }
+  else {
+    return default_value;
   }
 }
 

@@ -398,7 +398,23 @@ array_data_type boundary_mean_array(const array *a);
  *            not have the same size. 
  */
 
+
 int laplace_array(const array *a, 
                   array *b);
+/**********************************************************************
+ * Function:  get_array_entry
+ * Purpose:   Get value of array entry.
+ * Arguments: a - Pointer to array
+ *            i, j, k - Zero-based indices of entry to get.
+ * Return:    Value of array entry. If i, j, k are not valid indices into
+ *            a the function returns default_value.
+ */
+array_data_type get_array_entry_default(const array *a,
+										array_index_type i, 
+										array_index_type j,
+										array_index_type k, 
+										array_data_type default_value);
+
+
 
 #endif

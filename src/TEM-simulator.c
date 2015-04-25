@@ -28,6 +28,7 @@
 #include "macros.h"
 #include "misc.h"
 #include "simulation.h"
+#include "fftw3.h"
 
 /****************************************************************************/
 
@@ -87,7 +88,7 @@ comments and ignored.\n", 80, 0);
     printf(TYPE_ELECTRONBEAM); printf("\n  ");
     printf(TYPE_OPTICS); printf("\n  ");
     printf(TYPE_DETECTOR); printf("\n  ");
-    printf(TYPE_VOLUME); printf("\n\n");
+	printf(TYPE_ELECTRON_SPECIMEN_MODEL); printf("\n\n");
     printf("For help on a particular component, type\n");
     printf("TEM-simulator -help <component type>\n\n");
     printf("For help on a particular parameter, type\n");
@@ -122,7 +123,11 @@ comments and ignored.\n", 80, 0);
 
 int main(int argc, char **argv){
   simulation *sim;
-
+/*tester----------------------------
+  argc=1;
+  char *fn="input_highdose.txt";
+  argv[1] =  fn;
+*/
   if(argc < 2){
     print_info();
     return 0;
@@ -145,5 +150,5 @@ int main(int argc, char **argv){
   delete_simulation(sim);
 
   return 0;
-
 }
+

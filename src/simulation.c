@@ -38,7 +38,7 @@
 #include "sample.h"
 #include "volume.h"
 #include "wavefunction.h"
-
+#include "multislice.h"
 /****************************************************************************/
 
 param_table *simulation_param_table();
@@ -68,6 +68,7 @@ int find_volume(simulation *s, const char *name, enum if_anonymous an);
 simulation *new_simulation(){
   simulation *s = malloc(sizeof(simulation));
   s->param = simulation_param_table();
+  s->elec_spec_model_param = elec_spec_model_param_table();
   s->init = 0;
   s->num_detector = 0;
   s->num_electronbeam = 0;
@@ -80,8 +81,7 @@ simulation *new_simulation(){
   return s;
 }
 
-/****************************************************************************/
-
+/*****************************************************************************/
 void delete_simulation(simulation *s){
   int i;
   for(i = 0; i < s->num_detector; i++){
@@ -106,11 +106,12 @@ void delete_simulation(simulation *s){
     delete_volume(s->volume[i]);
   }
   delete_param_table(s->param);
+  delete_param_table(s->elec_spec_model_param);
+
   free(s);
 }
 
 /****************************************************************************/
-
 param_table *simulation_param_table(){
   param_table *pt = new_param_table(5, TYPE_SIMULATION, "");
   add_param_def(pt, PAR_GENERATE_MICROGRAPHS, "b", NO_STRING);
@@ -389,6 +390,9 @@ param_table *add_simcomp(simulation *s, const char *class, const char *name, int
       return s->volume[i]->param;
     }
   }
+    else if(0 == strcmp(class, TYPE_ELECTRON_SPECIMEN_MODEL)){
+		return s->elec_spec_model_param;
+	}
   else {
     WARNING("Unknown component %s\n", class);
     return NULL;
@@ -399,6 +403,7 @@ param_table *add_simcomp(simulation *s, const char *class, const char *name, int
   else {
     WARNING("A %s with the name %s already exists.\n", class, name);
   }
+  
   return NULL;
 }
 
@@ -771,16 +776,24 @@ int generate_micrographs(simulation *s){
   slice_th = wf->pixel_size * wf->pixel_size / (4*M_PI)
     * wave_number(electronbeam_get_acc_energy(s->electronbeam[0]));
   write_log_comment("\nGenerating micrographs.\n");
-  for(tilt = 0; tilt < ntilts; tilt++){
-    if(wavefunction_propagate(s, wf, slice_th, tilt)){
-      WARNING("Error computing projection.\n");
-      break;
-    }
-    for(i = 0; i < s->num_detector; i++){
-      if(detector_get_intensity(s->detector[i], wf, tilt)){
-	WARNING("Error computing intensity.\n");
-	break;
-      }
+  /*-------------------------------------------------------------------------------*/
+  for(tilt = 0; tilt < ntilts; tilt++){		
+	  if (0!=strcmp(get_param_string(s->elec_spec_model_param,PAR_INTERACTION_MODEL),PAR_INTERACTION_MODEL__LINEAR)){
+		  if(multislice(s, wf, tilt)){
+			  WARNING("\nError in multislice computation.");
+			  break;
+		  }
+	  }
+	  else if(wavefunction_propagate(s, wf, slice_th, tilt)){
+		  WARNING("Error computing projection.\n");
+		  break;
+	  }
+	  for(i = 0; i < s->num_detector; i++){
+		  if(detector_get_intensity(s->detector[i], wf, tilt)){
+			  WARNING("Error computing intensity.\n");
+			  break;
+		  }
+		  printf("max of detector %d is %f\n",i+1,max_array(&s->detector[i]->count.values));
       if(get_param_boolean(s->detector[i]->param, PAR_USE_QUANTIZATION)){
 	if(detector_apply_quantization(s->detector[i])){
 	  WARNING("Error computing quantization noise.\n");
@@ -793,7 +806,9 @@ int generate_micrographs(simulation *s){
       }
       detector_write_image(s->detector[i]);
     }
+	
   }
+  /*-------------------------------------------------------------------------------*/
   delete_wavefunction(wf);
   write_log_comment("\nSimulation complete.\n");
   return 0;

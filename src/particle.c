@@ -26,7 +26,7 @@
 #include "particle.h"
 #include "array.h"
 #include "electronbeam.h"
-#include "/opt/local/include/fftw3.h"
+#include "fftw3.h"
 #include "functions.h"
 #include "geometry.h"
 #include "input.h"
@@ -520,7 +520,6 @@ int particle_project(particle *p, wavefunction *wf, matrix *proj_matrix, double 
   ds0 = -get_matrix_entry(proj_matrix, 2, dim[0])/get_matrix_entry(proj_matrix, 2, dim[2]);
   ds1 = -get_matrix_entry(proj_matrix, 2, dim[1])/get_matrix_entry(proj_matrix, 2, dim[2]);
   w = voxel_size * sqrt(1 + ds0*ds0 + ds1*ds1) * potential_conv_factor(acc_en);
-
   init_array(&(pf.values), 2, (long)ceil(n[0] + n[2]*fabs(ds0) + 1), (long)ceil(n[1] + n[2]*fabs(ds1) + 1));
   fill_array(&(pf.values), 0);
   pf.basis[0] = voxel_size*get_matrix_entry(proj_matrix, 0, dim[0]);

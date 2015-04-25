@@ -23,7 +23,7 @@
 #ifndef STRUCTS_HEADER
 #define STRUCTS_HEADER
 #include "array.h"
-#include "/opt/local/include/fftw3.h"
+#include "fftw3.h"
 #include "functions.h"
 #include "input.h"
 #include "macros.h"
@@ -144,6 +144,7 @@ typedef struct {
   int num_sample;
   int num_volume;
   param_table *param;
+  param_table *elec_spec_model_param;
   char init;
 } simulation;
 

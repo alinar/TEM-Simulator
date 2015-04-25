@@ -23,6 +23,12 @@
 #define MATRIX_HEADER
 #include <stdarg.h>
 
+/*
+ * i is an integr from 0 to m-1 ,and j is from 0 to n-1.
+ * The data structure of the matrix is column-major regarding
+ *  to the (m,n) or (i,j) indexing of the elements.
+ *  */
+
 typedef struct {
   long m, n;
   double *data;
@@ -53,6 +59,8 @@ void swap_matrix_data(matrix *a, matrix *b);
 void copy_matrix(const matrix *a, matrix *b);
 
 void add_matrix(matrix *a, matrix *b, double x);
+
+void mult_matrix_by_sc(matrix *a, double x);
 
 double sc_prod_matrix(matrix *a, matrix *b);
 

@@ -30,6 +30,15 @@
  * array, values(:,i,j) is the value of the function at the point 
  * ((i-i0)*basis[0]+(j-j0)*basis[2]+offset[0], (i-i0)*basis[1]+(j-j0)*basis[3]+offset[1])
  * where i0 = 0.5*(m-1), j0 = 0.5*(n-1).
+ * *********************************************************************
+ * *********************************************************************
+ *By Ali Narangifard:
+ * 
+ * "basics" and "offset" are to be chosen to imply a particular 2D rotation and then translation
+ * of the axes which is applied to the original refrence in which the axes are upright and origin is the center.  
+ * basics=[cos(theta) sin(theta) -sin(theta) cos(theta)] where theta is the angle of rotation of the "values" axes compared to the original axes.
+ * k can be just the numbers of arrays in a stack with the same rotation and translation or
+ * real and imaginary parts of a complex function. basics is also used to apply scaling.
  ***********************************************************************/
 
 typedef struct {
@@ -46,6 +55,7 @@ typedef struct {
  * Arguments: a - pointer to the vecf2d object.
  *            range - after return, contains {xmin, xmax, ymin, ymax}.
  */
+
 
 void vecf2d_xyrange(const vecf2d *a, 
                     double range[4]);
