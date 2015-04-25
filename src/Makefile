@@ -27,7 +27,7 @@ CFLAGS = -Wall -pedantic -O3
 # ld: library not found for -lfftw3
 
 all: TEM-simulator
-TEM-simulator: TEM-simulator.c array.o detector.o electronbeam.o functions.o geometry.o input.o log.o matrix.o misc.o mrc.o optics.o particle.o particleset.o pdb.o random.o sample.o simulation.o volume.o wavefunction.o
+TEM-simulator: TEM-simulator.c array.o detector.o electronbeam.o functions.o geometry.o input.o log.o matrix.o misc.o mrc.o optics.o particle.o particleset.o pdb.o random.o sample.o simulation.o volume.o wavefunction.o multislice.o
 	$(CC) $(CFLAGS) -o $@ $^ -lfftw3 -lm
 clean:
 	rm *.o TEM-simulator
@@ -63,9 +63,11 @@ random.o: random.c random.h macros.h
 	$(CC) -c $(CFLAGS) -o $@ $<
 sample.o: sample.c sample.h array.h electronbeam.h functions.h geometry.h input.h log.h macros.h matrix.h misc.h particle.h particleset.h pdb.h simulation.h structs.h wavefunction.h
 	$(CC) -c $(CFLAGS) -o $@ $<
-simulation.o: simulation.c simulation.h detector.h electronbeam.h geometry.h input.h log.h macros.h misc.h optics.h particle.h sample.h structs.h volume.h wavefunction.h
+simulation.o: simulation.c simulation.h detector.h electronbeam.h geometry.h input.h log.h macros.h misc.h optics.h particle.h sample.h structs.h volume.h wavefunction.h multislice.h
 	$(CC) -c $(CFLAGS) -o $@ $<
 volume.o: volume.c volume.h array.h electronbeam.h geometry.h input.h log.h macros.h matrix.h misc.h mrc.h particle.h particleset.h sample.h simulation.h
 	$(CC) -c $(CFLAGS) -o $@ $<
 wavefunction.o: wavefunction.c wavefunction.h array.h electronbeam.h functions.h geometry.h log.h misc.h optics.h particle.h particleset.h sample.h simulation.h structs.h
+	$(CC) -c $(CFLAGS) -o $@ $<
+multislice.o: multislice.c multislice.h wavefunction.h array.h electronbeam.h functions.h geometry.h log.h misc.h optics.h particle.h particleset.h sample.h simulation.h structs.h macros.h matrix.h
 	$(CC) -c $(CFLAGS) -o $@ $<
