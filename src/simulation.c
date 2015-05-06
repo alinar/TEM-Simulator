@@ -783,7 +783,7 @@ int generate_micrographs(simulation *s){
     * wave_number(electronbeam_get_acc_energy(s->electronbeam[0]));
   write_log_comment("\nGenerating micrographs.\n");
   /*-------------------------------------------------------------------------------*/
-  for(tilt = 0; tilt < ntilts; tilt++){		
+  for(tilt = 0; tilt < ntilts; tilt++){
 	  if (0!=strcmp(get_param_string(s->elec_spec_model_param,PAR_INTERACTION_MODEL),PAR_INTERACTION_MODEL__LINEAR)){
 		  if(multislice(s, wf, tilt)){
 			  WARNING("\nError in multislice computation.");

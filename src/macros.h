@@ -278,8 +278,8 @@
 #define PAR_SLICE_THICKNESS         "slice_thickness"
 #define PAR_SLICE_WRITE_VOLUME      "slice_write_volume"
 #define PAR_SAVE_WAVE_FUNCT			"save_wave_function"
-#define PAR_WAVE_FUNCTION_FILE_RE   "wave_function_re"
-#define PAR_WAVE_FUNCTION_FILE_IM   "wave_function_im"
+#define PAR_WAVE_FUNCTION_FILE_RE   "wave_function_file_re"
+#define PAR_WAVE_FUNCTION_FILE_IM   "wave_function_file_im"
 
 /* Possible values of some string parameters */
 #define PAR_BYTE_ORDER__BE          "be"

@@ -114,6 +114,7 @@ typedef struct {
   electronbeam *ed;
   optics *opt;
   char init;
+  mrcheaderdata file_header;
 } wavefunction;
 
 

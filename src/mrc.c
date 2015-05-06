@@ -258,9 +258,9 @@ int write_float4b_data(double *a, FILE *fp, long size[3], long steps[3], int rev
   for(k = 0; k < size[2]; k++){
     for(j = 0; j < size[1]; j++){
       for(i = 0; i < size[0]; i++){
-	*xd = (float4b)(*ad);
-	xd++;
-	ad += steps[0];
+    	  *xd = (float4b)(*ad);
+    	  xd++;
+    	  ad += steps[0];
       }
       ad += steps[1];
     }
