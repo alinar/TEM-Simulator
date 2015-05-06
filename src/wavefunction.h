@@ -23,6 +23,7 @@
 #define WAVEFUNCTION_HEADER
 #include "structs.h"
 
+param_table *wave_function_param_table();
 
 wavefunction *new_wavefunction(electronbeam *ed, optics *o);
 

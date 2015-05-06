@@ -37,6 +37,23 @@
 #include "sample.h"
 #include "simulation.h"
 /****************************************************************************/
+param_table *wave_function_param_table(){
+	param_table *pt = new_param_table(3, TYPE_WAVE_FUNCTION,"");
+	//delete_param_table in delete_simulation.
+	add_param_def(pt, PAR_SAVE_WAVE_FUNCT, "b", NO_STRING);
+	add_param_opt(pt, PAR_WAVE_FUNCTION_FILE_RE, "s");
+	add_param_opt(pt, PAR_WAVE_FUNCTION_FILE_IM, "s");
+	set_comp_descr(pt, "wave_function helps to write the wave function coming out from \
+the specimen to MRC files. The pixel size of wave function will be the minimum pixel \
+size value of detectors divided by the optic's magnification.");
+	set_param_descr(pt, PAR_WAVE_FUNCTION_FILE_RE, "Stack of the real parts of the wave functions\
+			at all the tilt angles in MRC format.");
+	set_param_descr(pt, PAR_WAVE_FUNCTION_FILE_IM, "Stack of the imaginary parts of the wave functions\
+			at all the tilt angles in MRC format.");
+	set_param_descr(pt, PAR_SAVE_WAVE_FUNCT, "If set to yes, the wave function coming out the\
+			specimen is written to files.");
+	return pt;
+}
 
 wavefunction *new_wavefunction(electronbeam *ed, optics *o){
 	wavefunction *wf = malloc(sizeof(wavefunction));
@@ -624,12 +641,81 @@ int wavefunction_propagate(simulation *sim, wavefunction *wf, double slice_th, l
 		free(hit);
 	}
 	write_log_comment("Projected %i particles.\n", count);
+	/*write wavefunction on file:*/
+	if (get_param_boolean(sim->wave_function_param,PAR_SAVE_WAVE_FUNCT)){
+
+	}
 	/* Propagate elastic wave to detector plane */
 	if(wavefunction_prop_el_opt(wf, tilt, kmax*slice_th)) return 1;
 	/* Correct for inelastic scattering in background */
 	if(get_sample_geom(&pm, pos, s, g, tilt) || background_project(s, wf, &pm, pos)
 			|| wavefunction_apply_bg_blur(wf, tilt)) return 1;
-	printf("intensity range after optics : %f - %f\n",min_array(&wf->intens.values),max_array(&wf->intens.values));
+	write_log_comment("intensity range after optics : %f - %f\n",min_array(&wf->intens.values),max_array(&wf->intens.values));
 	free_matrix(&pm);
 	return 0;
+}
+
+int wavefunction_write_image(wavefunction *wf,param_table *param,simulation *sim){
+	int ret;
+	int i,j,k;
+	long size[3];
+	long steps[3]={1,1,0};
+	double min_max_mean_re[3],min_max_mean_im[3];
+	array *data_re,*data_im;
+	FILE *fp_re,*fp_im;
+	char *file_re = get_param_string(param,PAR_WAVE_FUNCTION_FILE_RE);
+	char *file_im = get_param_string(param,PAR_WAVE_FUNCTION_FILE_IM);
+	double voxel_size = wf->pixel_size;
+	mrcheaderdata m;
+	size[0] = wf->wf->size[0]/2;
+	size[1] = wf->wf->size[1]/2;
+	size[2] = 1;
+	init_array(data_re,size[0],size[1],size[2]);
+	init_array(data_im,size[0],size[1],size[2]);
+	for (i=0;i<size[0];i++){
+		for (j=0;j<size[1];j++){
+			set_array_entry(data_re,i,j,1,get_array_entry(wf->wf,i,j,0));
+			set_array_entry(data_im,i,j,1,get_array_entry(wf->wf,i,j,1));
+		}
+	}
+    voxel_size /= ONE_ANGSTROM;
+    m.size[0] = (int)size[0];
+    m.size[1] = (int)size[1];
+    m.size[2] = (int)size[2];
+    m.cell[0] = voxel_size*size[0];
+    m.cell[1] = voxel_size*size[1];
+    m.cell[2] = voxel_size*size[2];
+    m.mode = 2;
+    m.amin = min_array(data_re);
+    m.amax = max_array(data_re);
+    m.amean = mean_array(data_re);
+    m.next = 0;
+    m.rev = 0;
+	FOPEN(fp_re, file_re, "ab");
+	FOPEN(fp_im, file_im, "ab");
+	ret = write_float4b_data(data_re.data, fp_re, size, steps,
+				     m.rev, min_max_mean_re);
+	ret = write_float4b_data(data_im.data, fp_im, size, steps,
+				     m.rev, min_max_mean_im);
+	fclose(fp_re);
+	fclose(fp_im);
+	/*updating headers*/
+	  if(1 == m.size[2]){ /* min and max are slightly different for first image. */
+	    m.amin = min_max_mean[0];
+	    m.amax = min_max_mean[1];
+	    m.amean = min_max_mean[2];
+	  }
+	  else {
+	    m.amin = min_d(m.amin, min_max_mean[0]);
+	    d->file_header.amax = max_d(d->file_header.amax, min_max_mean[1]);
+	    d->file_header.amean = ((d->file_header.size[2] - 1) * d->file_header.amean + min_max_mean[2])/d->file_header.size[2];
+	  }
+	FOPEN(fp_re, file_re, "rb+");
+	FOPEN(fp_im, file_im, "rb+");
+
+	fclose(fp_re);
+	fclose(fp_im);
+	free_array(data_re);
+	free_array(data_im);
+	return ret;
 }

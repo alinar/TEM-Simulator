@@ -69,6 +69,7 @@ simulation *new_simulation(){
   simulation *s = malloc(sizeof(simulation));
   s->param = simulation_param_table();
   s->elec_spec_model_param = elec_spec_model_param_table();
+  s->wave_function_param = wave_function_param_table();
   s->init = 0;
   s->num_detector = 0;
   s->num_electronbeam = 0;
@@ -107,6 +108,7 @@ void delete_simulation(simulation *s){
   }
   delete_param_table(s->param);
   delete_param_table(s->elec_spec_model_param);
+  delete_param_table(s->wave_function_param);
 
   free(s);
 }
@@ -390,9 +392,13 @@ param_table *add_simcomp(simulation *s, const char *class, const char *name, int
       return s->volume[i]->param;
     }
   }
-    else if(0 == strcmp(class, TYPE_ELECTRON_SPECIMEN_MODEL)){
+  else if(0 == strcmp(class, TYPE_ELECTRON_SPECIMEN_MODEL)){
 		return s->elec_spec_model_param;
-	}
+  }
+  else if(0 == strcmp(class, TYPE_WAVE_FUNCTION)){
+		return s->wave_function_param;
+  }
+
   else {
     WARNING("Unknown component %s\n", class);
     return NULL;
@@ -793,7 +799,7 @@ int generate_micrographs(simulation *s){
 			  WARNING("Error computing intensity.\n");
 			  break;
 		  }
-		  printf("max of detector %d is %f\n",i+1,max_array(&s->detector[i]->count.values));
+		  write_log_comment("maximum value of detector %d is %f\n",i+1,max_array(&s->detector[i]->count.values));
       if(get_param_boolean(s->detector[i]->param, PAR_USE_QUANTIZATION)){
 	if(detector_apply_quantization(s->detector[i])){
 	  WARNING("Error computing quantization noise.\n");

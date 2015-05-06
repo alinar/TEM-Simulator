@@ -145,6 +145,7 @@ typedef struct {
   int num_volume;
   param_table *param;
   param_table *elec_spec_model_param;
+  param_table *wave_function_param;
   char init;
 } simulation;
 

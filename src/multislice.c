@@ -556,6 +556,6 @@ int multislice(simulation *sim, wavefunction *wf,  long tilt){
 	}
 	else
 		if(wavefunction_prop_el_opt(wf, tilt, 0 )) return 1;
-	printf("intensity range after optics : %f - %f\n",min_array(&wf->intens.values),max_array(&wf->intens.values));
+	write_log_comment("intensity range after optics : %f - %f\n",min_array(&wf->intens.values),max_array(&wf->intens.values));
 	return 0;
 }
