@@ -38,12 +38,11 @@
 #include "simulation.h"
 /****************************************************************************/
 param_table *wave_function_param_table(){
-	param_table *pt = new_param_table(5, TYPE_WAVE_FUNCTION,"");
+	param_table *pt = new_param_table(4, TYPE_WAVE_FUNCTION,"");
 	//delete_param_table in delete_simulation.
 	add_param_def(pt, PAR_SAVE_WAVE_FUNCT, "b", NO_STRING);
 	add_param_opt(pt, PAR_WAVE_FUNCTION_FILE_RE, "s");
 	add_param_opt(pt, PAR_WAVE_FUNCTION_FILE_IM, "s");
-	add_param_def(pt, PAR_IMAGE_AXIS_ORDER, "s,xy,yx", "xy");
 	add_param_def(pt, PAR_IMAGE_FILE_BYTE_ORDER, "s," PAR_BYTE_ORDER__BE "," PAR_BYTE_ORDER__LE "," PAR_BYTE_ORDER__NATIVE,
 	                PAR_BYTE_ORDER__NATIVE);
 	set_comp_descr(pt, "wave_function helps to write the wave function coming out from \
@@ -56,9 +55,6 @@ at all the tilt angles in MRC format.");
 at all the tilt angles in MRC format.");
 	set_param_descr(pt, PAR_SAVE_WAVE_FUNCT, "If set to yes, the wave function coming out from the\
 specimen is written to files.");
-	set_param_descr(pt, PAR_IMAGE_AXIS_ORDER, "Controls the order in which \
-pixel values are written in the output file. \"xy\" means that x is the \
-fastest varying index. default value is xy.");
 	set_param_descr(pt, PAR_IMAGE_FILE_BYTE_ORDER, "Controls if the output \
 file should be big endian or little endian.");
 	return pt;
@@ -675,10 +671,10 @@ int write_header_wavefunction_on_file(simulation *sim, wavefunction *wf){
 	  fn_re = get_param_string(sim->wave_function_param, PAR_WAVE_FUNCTION_FILE_RE);
 	  fn_im = get_param_string(sim->wave_function_param, PAR_WAVE_FUNCTION_FILE_IM);
 
-	  i = 0;
+	  i = 0; /*axis order xy*/
 
-	  wf->file_header.size[i] = wf->wf.size[i];
-	  wf->file_header.size[1-i] = wf->wf.size[1-i];
+	  wf->file_header.size[i] = wf->wf.size[i+1];
+	  wf->file_header.size[1-i] = wf->wf.size[1-i+1];
 	  wf->file_header.size[2] = 0;
 	  wf->file_header.mode = 2;
 	  wf->file_header.cell[0] = wf->file_header.size[0] * pixel_size;
@@ -728,11 +724,13 @@ int write_header_wavefunction_on_file(simulation *sim, wavefunction *wf){
 }
 
 int write_wavefunction_on_file(simulation *sim, wavefunction *wf){
-	  long size[3], steps[3];
+	  long size[3], steps[3] ;
+	  long i;
 	  double min_max_mean[3];
 	  int ret = 0;
 	  FILE *fp_re,*fp_im;
 	  const char *fn_re,*fn_im;
+	  double* data_aux;
 
 	  fn_re = get_param_string(sim->wave_function_param, PAR_WAVE_FUNCTION_FILE_RE);
 	  fn_im = get_param_string(sim->wave_function_param, PAR_WAVE_FUNCTION_FILE_IM);
@@ -740,10 +738,12 @@ int write_wavefunction_on_file(simulation *sim, wavefunction *wf){
 	  size[0] = wf->file_header.size[0];
 	  size[1] = wf->file_header.size[1];
 	  size[2] = 1;
-	  /*image_axis_order, "xy" */
-	  steps[0] = 2; /* ptr[0] is the real part and ptr[1] is imaginary. For saving only one part we have to set the step[0] to 2.*/
+	  /* image_axis_order, "xy" */
+	  steps[0] = 1;
 	  steps[1] = 1;
 	  steps[2] = 0; /* This value is unimportant since size[2] = 1. */
+
+	  data_aux = malloc(sizeof(double) * size[0] * size[1]);
 
 	  FOPEN(fp_re, fn_re, "ab");
 	  if(fp_re == NULL){
@@ -755,12 +755,17 @@ int write_wavefunction_on_file(simulation *sim, wavefunction *wf){
 	    WARNING("Could not open file %s for writing.\n", fn_im);
 	    return 1;
 	  }
+	  for (i=0;i<size[0] * size[1];i++){
+		  data_aux[i]=wf->wf.data[2*i];
+	  }
+	  if  (write_float4b_data(data_aux, fp_re, size, steps,wf->file_header.rev, min_max_mean))
+		  ret=1;
 
-	  if  (write_float4b_data(wf->wf.data, fp_re, size, steps,
-				     wf->file_header.rev, min_max_mean) ||
-			  write_float4b_data(wf->wf.data, fp_im, size, steps,
-			  				     wf->file_header.rev, min_max_mean)  ) ret = 1;
-
+	  for (i=0;i<size[0] * size[1];i++){
+		  data_aux[i]=wf->wf.data[2*i+1];
+	  }
+	  if (write_float4b_data(data_aux, fp_im, size, steps,wf->file_header.rev, min_max_mean))
+		  ret = 1;
 
 	  fclose(fp_im);
 	  fclose(fp_re);
@@ -788,6 +793,7 @@ int write_wavefunction_on_file(simulation *sim, wavefunction *wf){
 	      fclose(fp_im);
 	      return 1;
 	  }
+	  free(data_aux);
 	  fclose(fp_re);
 	  fclose(fp_im);
 	  write_log_comment("Detector image number %i written to file %s and %s.\n", wf->file_header.size[2], fn_re,fn_im);
