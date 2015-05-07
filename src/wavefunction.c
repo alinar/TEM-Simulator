@@ -38,24 +38,29 @@
 #include "simulation.h"
 /****************************************************************************/
 param_table *wave_function_param_table(){
-	param_table *pt = new_param_table(3, TYPE_WAVE_FUNCTION,"");
+	param_table *pt = new_param_table(5, TYPE_WAVE_FUNCTION,"");
 	//delete_param_table in delete_simulation.
 	add_param_def(pt, PAR_SAVE_WAVE_FUNCT, "b", NO_STRING);
 	add_param_opt(pt, PAR_WAVE_FUNCTION_FILE_RE, "s");
 	add_param_opt(pt, PAR_WAVE_FUNCTION_FILE_IM, "s");
 	add_param_def(pt, PAR_IMAGE_AXIS_ORDER, "s,xy,yx", "xy");
+	add_param_def(pt, PAR_IMAGE_FILE_BYTE_ORDER, "s," PAR_BYTE_ORDER__BE "," PAR_BYTE_ORDER__LE "," PAR_BYTE_ORDER__NATIVE,
+	                PAR_BYTE_ORDER__NATIVE);
 	set_comp_descr(pt, "wave_function helps to write the wave function coming out from \
-the specimen to MRC files. The pixel size of wave function will be the minimum pixel \
-size value of detectors divided by the optic's magnification.");
+the specimen to MRC files. The dimensions of the wave function's 2D plane is the maximum size of \
+the effective dimensions between all of the detectors which is calculated internally. The pixel size of the \
+wave function will be the minimum pixel size value of the detectors divided by the magnification of the optics.");
 	set_param_descr(pt, PAR_WAVE_FUNCTION_FILE_RE, "Stack of the real parts of the wave functions\
-			at all the tilt angles in MRC format.");
+at all the tilt angles in MRC format.");
 	set_param_descr(pt, PAR_WAVE_FUNCTION_FILE_IM, "Stack of the imaginary parts of the wave functions\
-			at all the tilt angles in MRC format.");
-	set_param_descr(pt, PAR_SAVE_WAVE_FUNCT, "If set to yes, the wave function coming out the\
-			specimen is written to files.");
+at all the tilt angles in MRC format.");
+	set_param_descr(pt, PAR_SAVE_WAVE_FUNCT, "If set to yes, the wave function coming out from the\
+specimen is written to files.");
 	set_param_descr(pt, PAR_IMAGE_AXIS_ORDER, "Controls the order in which \
-	pixel values are written in the output file. \"xy\" means that x is the \
-	fastest varying index. default value is xy.");
+pixel values are written in the output file. \"xy\" means that x is the \
+fastest varying index. default value is xy.");
+	set_param_descr(pt, PAR_IMAGE_FILE_BYTE_ORDER, "Controls if the output \
+file should be big endian or little endian.");
 	return pt;
 }
 
