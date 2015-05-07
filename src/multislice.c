@@ -549,8 +549,12 @@ int multislice(simulation *sim, wavefunction *wf,  long tilt){
 	free_array(slice_im);
 	free(slice_re);
 	free(slice_im);
-	get_max_wf(wf);
-	//propagate to detector through optics
+
+	/*save wavefuction on file*/
+	if (get_param_boolean(sim->wave_function_param,PAR_SAVE_WAVE_FUNCT)){
+		write_wavefunction_on_file(sim,wf);
+	}
+	/*propagate to detector through optics */
 	if (multislice_mode){
 		if(wavefunction_prop_el_opt(wf, tilt, sample_th/2 )) return 1;
 	}

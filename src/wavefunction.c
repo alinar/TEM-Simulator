@@ -645,6 +645,10 @@ int wavefunction_propagate(simulation *sim, wavefunction *wf, double slice_th, l
 		free(hit);
 	}
 	write_log_comment("Projected %i particles.\n", count);
+	/*save wavefuction on file*/
+	if (get_param_boolean(sim->wave_function_param,PAR_SAVE_WAVE_FUNCT)){
+		write_wavefunction_on_file(sim,wf);
+	}
 	/* Propagate elastic wave to detector plane */
 	if(wavefunction_prop_el_opt(wf, tilt, kmax*slice_th)) return 1;
 	/* Correct for inelastic scattering in background */
@@ -654,6 +658,8 @@ int wavefunction_propagate(simulation *sim, wavefunction *wf, double slice_th, l
 	free_matrix(&pm);
 	return 0;
 }
+
+/****************************************************************************/
 
 int write_header_wavefunction_on_file(simulation *sim, wavefunction *wf){
 	  FILE *fp_re,*fp_im;

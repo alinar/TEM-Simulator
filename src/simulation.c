@@ -781,8 +781,12 @@ int generate_micrographs(simulation *s){
   }
   slice_th = wf->pixel_size * wf->pixel_size / (4*M_PI)
     * wave_number(electronbeam_get_acc_energy(s->electronbeam[0]));
-  write_log_comment("\nGenerating micrographs.\n");
+  /*initialize wavefunction files.*/
+  if (get_param_boolean(s->wave_function_param,PAR_SAVE_WAVE_FUNCT)){
+	  write_header_wavefunction_on_file(s,wf);
+  }
   /*-------------------------------------------------------------------------------*/
+  write_log_comment("\nGenerating micrographs.\n");
   for(tilt = 0; tilt < ntilts; tilt++){
 	  if (0!=strcmp(get_param_string(s->elec_spec_model_param,PAR_INTERACTION_MODEL),PAR_INTERACTION_MODEL__LINEAR)){
 		  if(multislice(s, wf, tilt)){
