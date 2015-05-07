@@ -49,4 +49,8 @@ int wavefunction_set_inel_ctf(wavefunction *wf);
 
 int wavefunction_propagate(simulation *sim, wavefunction *wf, double slice_th, long tilt);
 
+int write_header_wavefunction_on_file(simulation *sim, wavefunction *wf);
+
+int write_wavefunction_on_file(simulation *sim, wavefunction *wf);
+
 #endif

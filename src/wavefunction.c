@@ -658,7 +658,6 @@ int wavefunction_propagate(simulation *sim, wavefunction *wf, double slice_th, l
 int write_header_wavefunction_on_file(simulation *sim, wavefunction *wf){
 	  FILE *fp_re,*fp_im;
 	  const char *fn_re,*fn_im;
-	  const char *format = "mrc";
 	  int i, fmt = 2;
 	  double pixel_size = wf->pixel_size;
 	  geometry *g = NULL;
@@ -667,8 +666,8 @@ int write_header_wavefunction_on_file(simulation *sim, wavefunction *wf){
 
 	  i = 0;
 
-	  wf->file_header.size[i] = wf.wf.size[i];
-	  wf->file_header.size[1-i] = wf.wf.size[1-i];
+	  wf->file_header.size[i] = wf->wf.size[i];
+	  wf->file_header.size[1-i] = wf->wf.size[1-i];
 	  wf->file_header.size[2] = 0;
 	  wf->file_header.mode = 2;
 	  wf->file_header.cell[0] = wf->file_header.size[0] * pixel_size;
@@ -692,8 +691,8 @@ int write_header_wavefunction_on_file(simulation *sim, wavefunction *wf){
 
 	  FOPEN(fp_re, fn_re, "wb");
 	  FOPEN(fp_im, fn_im, "wb");
-	  if(fp == NULL){
-	    WARNING("Could not open file %s for writing.\n", fn);
+	  if(fp_re == NULL || fp_im == NULL){
+	    WARNING("Could not open file %s or %s for writing.\n", fn_re, fn_im);
 	    return 1;
 	  }
 	  if(fmt > 0){
@@ -722,18 +721,10 @@ int write_wavefunction_on_file(simulation *sim, wavefunction *wf){
 	  double min_max_mean[3];
 	  int ret = 0;
 	  FILE *fp_re,*fp_im;
-	  const char *image_axis_order;
 	  const char *fn_re,*fn_im;
-	  const char *format;
-	  const double factor = 1;
-	  long padding;
-	  if(0 == d->init){
-	    WARNING("Error writing image file: Detector component has not been initialized.\n");
-	    return 1;
-	  }
-	  fn_re = get_param_string(s->wave_function_param, PAR_WAVE_FUNCTION_FILE_RE);
-	  fn_im = get_param_string(s->wave_function_param, PAR_WAVE_FUNCTION_FILE_IM);
-	  format = get_param_string(d->param, PAR_IMAGE_FILE_FORMAT);
+
+	  fn_re = get_param_string(sim->wave_function_param, PAR_WAVE_FUNCTION_FILE_RE);
+	  fn_im = get_param_string(sim->wave_function_param, PAR_WAVE_FUNCTION_FILE_IM);
 
 	  size[0] = wf->file_header.size[0];
 	  size[1] = wf->file_header.size[1];
@@ -745,12 +736,12 @@ int write_wavefunction_on_file(simulation *sim, wavefunction *wf){
 
 	  FOPEN(fp_re, fn_re, "ab");
 	  if(fp_re == NULL){
-	    WARNING("Could not open file %s for writing.\n", fn);
+	    WARNING("Could not open file %s for writing.\n", fn_re);
 	    return 1;
 	  }
 	  FOPEN(fp_im, fn_im, "ab");
 	  if(fp_im == NULL){
-	    WARNING("Could not open file %s for writing.\n", fn);
+	    WARNING("Could not open file %s for writing.\n", fn_im);
 	    return 1;
 	  }
 
@@ -763,12 +754,12 @@ int write_wavefunction_on_file(simulation *sim, wavefunction *wf){
 	  fclose(fp_im);
 	  fclose(fp_re);
 	  if(ret){
-	    WARNING("Error writing to file %s.\n", fn);
+	    WARNING("Error writing to file %s or %s.\n", fn_re,fn_im);
 	    return 1;
 	  }
 	  wf->file_header.size[2]++;
-	  wf->file_header.cell[2] += d->pixel;
-	  if(1 == d->file_header.size[2]){ /* min and max are slightly different for first image. */
+	  wf->file_header.cell[2] += wf->pixel_size;
+	  if(1 == wf->file_header.size[2]){ /* min and max are slightly different for first image. */
 	    wf->file_header.amin = min_max_mean[0];
 	    wf->file_header.amax = min_max_mean[1];
 	    wf->file_header.amean = min_max_mean[2];
@@ -778,17 +769,18 @@ int write_wavefunction_on_file(simulation *sim, wavefunction *wf){
 	    wf->file_header.amax = max_d(wf->file_header.amax, min_max_mean[1]);
 	    wf->file_header.amean = ((wf->file_header.size[2] - 1) * wf->file_header.amean + min_max_mean[2])/wf->file_header.size[2];
 	  }
-	  if((0 == strcmp(format, PAR_FILE_FORMAT__MRC)) || (0 == strcmp(format, PAR_FILE_FORMAT__MRC_INT))){
-	    FOPEN(fp, fn, "rb+");
-	    if(update_mrc_header(fp, &(wf->file_header))){
-	      WARNING("Error writing to file %s.\n", fn);
-	      fclose(fp);
+	  FOPEN(fp_re, fn_re, "rb+");
+	  FOPEN(fp_im, fn_im, "rb+");
+	  if(update_mrc_header(fp_re, &(wf->file_header)) || update_mrc_header(fp_im, &(wf->file_header))){
+	      WARNING("Error writing to file %s or %s.\n", fn_re,fn_im);
+	      fclose(fp_re);
+	      fclose(fp_im);
 	      return 1;
-	    }
-	    fclose(fp);
 	  }
-	  write_log_comment("Detector image number %i written to file %s.\n", wf->file_header.size[2], fn);
+	  fclose(fp_re);
+	  fclose(fp_im);
+	  write_log_comment("Detector image number %i written to file %s and %s.\n", wf->file_header.size[2], fn_re,fn_im);
 	  return 0;
-	}
 }
+
 
