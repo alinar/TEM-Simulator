@@ -23,7 +23,7 @@
 #define MACROS_HEADER
 
 /* Version of the program */
-#define VERSION_NUMBER "1.4"
+#define VERSION_NUMBER "1.4.1"
 
 /* The maximum length of lines (including \n) in input files */
 #define MAX_LINE_LENGTH 201
