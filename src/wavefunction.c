@@ -665,7 +665,7 @@ int wavefunction_propagate(simulation *sim, wavefunction *wf, double slice_th, l
 int write_header_wavefunction_on_file(simulation *sim, wavefunction *wf){
 	  FILE *fp_re,*fp_im;
 	  const char *fn_re,*fn_im;
-	  int i, fmt = 2;
+	  int i;
 	  double pixel_size = wf->pixel_size;
 	  geometry *g = NULL;
 	  fn_re = get_param_string(sim->wave_function_param, PAR_WAVE_FUNCTION_FILE_RE);
@@ -688,7 +688,7 @@ int write_header_wavefunction_on_file(simulation *sim, wavefunction *wf){
 	  wf->file_header.amean = 0;
 	  wf->file_header.next = 0;
 	  wf->file_header.rev = reverse_byte_order(get_param_string(sim->wave_function_param, PAR_IMAGE_FILE_BYTE_ORDER));
-	  if(fmt == 2) wf->file_header.mode = 1;
+	  
 	  g = get_geometry(sim, "");
 	    if(g == NULL){
 	      WARNING("Geometry required for initialization of detector.\n");
@@ -702,21 +702,19 @@ int write_header_wavefunction_on_file(simulation *sim, wavefunction *wf){
 	    WARNING("Could not open file %s or %s for writing.\n", fn_re, fn_im);
 	    return 1;
 	  }
-	  if(fmt > 0){
-	    if(get_param_boolean(g->param, PAR_GEN_TILT_DATA)){
+	  if(get_param_boolean(g->param, PAR_GEN_TILT_DATA)){
 	      if(write_mrc_header_ext(fp_re, &(wf->file_header), &(g->data)) || write_mrc_header_ext(fp_im, &(wf->file_header), &(g->data))){
 	    	  fclose(fp_re);
 	    	  fclose(fp_im);
 	    	  return 1;
 	      }
-	    }
-	    else {
+	  }
+	  else {
 	      if(write_mrc_header(fp_re, &(wf->file_header)) || write_mrc_header(fp_im, &(wf->file_header))){
 	    	  fclose(fp_re);
 	    	  fclose(fp_im);
 	    	  return 1;
 	      }
-	    }
 	  }
 	  fclose(fp_re);
 	  fclose(fp_im);
@@ -740,7 +738,7 @@ int write_wavefunction_on_file(simulation *sim, wavefunction *wf){
 	  size[2] = 1;
 	  /* image_axis_order, "xy" */
 	  steps[0] = 1;
-	  steps[1] = 1;
+	  steps[1] = 0;
 	  steps[2] = 0; /* This value is unimportant since size[2] = 1. */
 
 	  data_aux = malloc(sizeof(double) * size[0] * size[1]);
