@@ -718,6 +718,7 @@ int write_header_wavefunction_on_file(simulation *sim, wavefunction *wf){
 	  }
 	  fclose(fp_re);
 	  fclose(fp_im);
+	  write_log_comment("Header is written to the files %s and %s.\n", fn_re,fn_im);
 	  return 0;
 }
 
@@ -794,7 +795,7 @@ int write_wavefunction_on_file(simulation *sim, wavefunction *wf){
 	  free(data_aux);
 	  fclose(fp_re);
 	  fclose(fp_im);
-	  write_log_comment("Detector image number %i written to file %s and %s.\n", wf->file_header.size[2], fn_re,fn_im);
+	  write_log_comment("Wave function number %i written to the files %s and %s.\n", wf->file_header.size[2], fn_re,fn_im);
 	  return 0;
 }
 
