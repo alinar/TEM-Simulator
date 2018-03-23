@@ -627,7 +627,7 @@ int wavefunction_propagate(simulation *sim, wavefunction *wf, double slice_th, l
     }
     free(kvec);
     free(hit);
-    free(masked_particle);
+    delete_particle(masked_particle);
   }
   write_log_comment("Projected %i particles.\n", count);
   /* Propagate elastic wave to detector plane */
